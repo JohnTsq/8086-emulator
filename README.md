@@ -474,7 +474,7 @@ Intel X86指令属于复杂计算机指令集(CISC)，具有如下特点：
 - Mod域(BYTE2[7:6])有2个比特位，用于指示操作数的来源。
 
   | Mod编码(二进制)| 释义 |
-  | -------- | -------- | -------- |
+  | -------- | -------- |
   | 00     | 存储器模式，无位移量字节；如果R/M=110，则有一个16位的位移量     |
   | 01     | 存储器模式，8位位移量字节（1个字节）     |
   | 10     | 存储器模式，16位位移量字节(2个字节)存储器模式，16位位移量字节(2个字节)     |
@@ -1004,13 +1004,13 @@ Intel X86指令属于复杂计算机指令集(CISC)，具有如下特点：
 | SUB | SUB DST,SRC | sub ax,30 | 将AX寄存器的值减去内存地址30处的值 |
 | SBB | SBB DST,SRC | sbb ax,30 | 将AX寄存器的值减去内存地址30处的值，若进位符号CF为1，则AX再减1 |
 | MUL | MUL SRC | mul bl | 无符号数乘法，寄存器AL中的值乘寄存器BL中的值，结果存入AX |
-|-|-| mul bx | 无符号数乘法，寄存器AX中的值乘寄存器BX中的值，结果中低8位存入AX，高8位存入DX |
+|-|-| mul bx | 无符号数乘法，寄存器AX中的值乘寄存器BX中的值，结果中低16位存入AX，高16位存入DX |
 | IMUL | IMUL SRC | imul bl | 有符号数乘法，寄存器AL中的值乘寄存器BL中的值，结果存入AX |
-|-|-| imul bx | 有符号数乘法，寄存器AX中的值除以寄存器BX中的值，结果中低8位存入AX，高8位存入DX |
+|-|-| imul bx | 有符号数乘法，寄存器AX中的值除以寄存器BX中的值，结果中低16位存入AX，高16位存入DX |
 | DIV | DIV SRC | div bl | 无符号数除法，寄存器AX中的值除以寄存器BL中的值，结果中商存入AL，余数存入AH |
-|-|-| div bx | 无符号数除法，由寄存器DX值作高8位与寄存器AX值值作低8位组成的值，除以寄存器BX中的值，结果中商存入AX，余数存入DX |
+|-|-| div bx | 无符号数除法，由寄存器DX值作高16位与寄存器AX值值作低16位组成的值，除以寄存器BX中的值，结果中商存入AX，余数存入DX |
 | IDIV | IDIV SRC | idiv bl | 有符号数除法，寄存器AX中的值除以寄存器BL中的值，结果中商存入AL，余数存入AH |
-|-|-| idiv bx | 有符号数除法，由寄存器DX值作高8位与寄存器AX值值作低8位组成的值，除以寄存器BX中的值，结果中商存入AX，余数存入DX |
+|-|-| idiv bx | 有符号数除法，由寄存器DX值作高16位与寄存器AX值值作低16位组成的值，除以寄存器BX中的值，结果中商存入AX，余数存入DX |
 | INC | INC DST | inc ax | AX寄存器的值加1 |
 | DEC | DEC DST | dec ax | AX寄存器的值减1 |
 | CBW | CBW | cbw | 将AL保持原值（有符号数）扩展到AX，即根据AL的最高位（符号位）来决定AH是00H还是FFH |
@@ -1111,15 +1111,15 @@ call ip/reg  -> push ip, jmp ip/reg
 |-| CMPSW | cmpsw | 将DS:[SI]处的字16位表示的值减去ES:[DI]处的字16位表示的值，结果影响标志寄存器PSW，若方向标志位DF=0，则DI与SI均加2，若方向标志位DF=1，则DI与SI均减2 |
 | LODS | LODSB | lodsb | 将DS:[SI]处的字节8位拷贝至AL，若方向标志位DF=0，则SI加1，若方向标志位DF=1，则SI减1 |
 |-| LODSW | lodsw | 将DS:[SI]处的字16位拷贝至AX，若方向标志位DF=0，则SI加2，若方向标志位DF=1，则SI减2 |
-| STOS | STOSB | stosb | 将ES:[DI]处的字节8位拷贝至AL，若方向标志位DF=0，则DI加1，若方向标志位DF=1，则DI减1 |
-|-| STOSW | stosw | 将ES:[DI]处的字16位拷贝至AX，若方向标志位DF=0，则DI加2，若方向标志位DF=1，则DI减2 |
+| STOS | STOSB | stosb | 将AL中的字节8位拷贝至ES:[DI]处，若方向标志位DF=0，则DI加1，若方向标志位DF=1，则DI减1 |
+|-| STOSW | stosw | 将AX中的字16位拷贝至ES:[DI]处，若方向标志位DF=0，则DI加2，若方向标志位DF=1，则DI减2 |
 | SCAS | SCASB | scasb | 将AL表示的值减去ES:[DI]处的字节8位表示的值，结果影响标志寄存器PSW，若方向标志位DF=0，则DI加1，若方向标志位DF=1，则DI减1 |
 |-| SCASW | scasw | 将AX表示的值减去ES:[DI]处的字16位表示的值，结果影响标志寄存器PSW，若方向标志位DF=0，则DI加1，若方向标志位DF=1，则DI减1 |
-| REP | REP MOVS/LODS/STOS | rep movsw | 若CX≠0，则重复一下操作：1、movsw；2、CX减1 |
-| REPE | REPE CMPS/SCAS | repe cmpsw | 若CX≠0，则重复一下操作：1、movsw；2、CX减1；3、若ZF不为1则退出循环 |
-| REPZ | REPZ CMPS/SCAS | repz cmpsw | 若CX≠0，则重复一下操作：1、movsw；2、CX减1；3、若ZF不为1则退出循环 |
-| REPNE | REPNE CMPS/SCAS | repne cmpsw | 若CX≠0，则重复一下操作：1、movsw；2、CX减1；3、若ZF不为0则退出循环 |
-| REPNZ | REPNZ CMPS/SCAS | repnz cmpsw | 若CX≠0，则重复一下操作：1、movsw；2、CX减1；3、若ZF不为0则退出循环 |
+| REP | REP MOVS/LODS/STOS | rep movsw | 若CX≠0，则重复以下操作：1、movsw；2、CX减1 |
+| REPE | REPE CMPS/SCAS | repe cmpsw | 若CX≠0，则重复以下操作：1、cmpsw；2、CX减1；3、若ZF不为1则退出循环 |
+| REPZ | REPZ CMPS/SCAS | repz cmpsw | 若CX≠0，则重复以下操作：1、cmpsw；2、CX减1；3、若ZF不为1则退出循环 |
+| REPNE | REPNE CMPS/SCAS | repne cmpsw | 若CX≠0，则重复以下操作：1、cmpsw；2、CX减1；3、若ZF不为0则退出循环 |
+| REPNZ | REPNZ CMPS/SCAS | repnz cmpsw | 若CX≠0，则重复以下操作：1、cmpsw；2、CX减1；3、若ZF不为0则退出循环 |
 
 #### FLAG MANIPULATION INSTRUCTIONS
 
@@ -1191,9 +1191,9 @@ call ip/reg  -> push ip, jmp ip/reg
             - DW定义的变量的类型值为2
             - DD定义的变量的类型值为4
     - 与这3个属性相关的数值回送算符分别属是 SEG , OFFSET, TYPE 
-        MOV  AX, SEG X  ; 将变量X所在的段地址送入AX
-        MOV  BX, OFFSET Y  ; 将变量Y的偏移地址送入BX
-        MOV  CX, TYPE Z  ; 将变量Z的类型值送入CX
+        - MOV  AX, SEG X  ; 将变量X所在的段地址送入AX
+        - MOV  BX, OFFSET Y  ; 将变量Y的偏移地址送入BX
+        - MOV  CX, TYPE Z  ; 将变量Z的类型值送入CX
 
 ### 语法检查
 具有语法检查机制，不符合标准的语法将报错（Compile Error）。
